@@ -483,9 +483,6 @@ final class MMCQ {
                 queue.append(vboxes[1])
                 color += 1
             }
-            if (queue.count == 4) {
-                let a = 1
-            }
             queue.sort(by: comparator)
             
             if color >= target {
