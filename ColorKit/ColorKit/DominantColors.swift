@@ -103,7 +103,7 @@ extension UIImage {
     ///   - quality: The quality used to determine the dominant colors. A higher quality will yield more accurate results, but will be slower.
     ///   - algorithm: The algorithm used to determine the dominant colors. When using a k-means algorithm (`kMeansClustering`), a `CIKMeans` CIFilter isused. Unfortunately this filter doesn't work on the simulator.
     /// - Returns: The dominant colors as array of `UIColor` instances. When using the `.iterative` algorithm, this array is ordered where the first color is the most dominant one.
-    public func dominantColors(with quality: DominantColorQuality = .fair, algorithm: DominantColorAlgorithm = .iterative) throws -> [UIColor] {
+    public func dominantColors(with quality: DominantColorQuality = .fair, algorithm: DominantColorAlgorithm = .medianCut) throws -> [UIColor] {
         switch algorithm {
         case .iterative:
             let dominantColorFrequencies = try self.dominantColorFrequencies(with: quality)
