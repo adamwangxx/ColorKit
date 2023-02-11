@@ -38,6 +38,9 @@ extension UIImage {
         
         /// Finds the dominant colors of an image by using using a k-means clustering algorithm.
         case kMeansClustering
+        
+        /// Finds the dominant colors of an image by using median cut algorithm.
+        case medianCut
     }
     
     /// Reoresents how precise the dominant color algorithm should be.
@@ -112,6 +115,15 @@ extension UIImage {
         case .kMeansClustering:
             let dominantcolors = try kMeansClustering(with: quality)
             return dominantcolors
+        case .medianCut:
+            guard let colorPalette = ColorThief.getPalette(from: self, colorCount: 5, quality: ColorThief.defaultQuality, ignoreWhite: false) else {
+                throw ImageColorError.medianCutFailure
+            }
+            var result = [UIColor]()
+            for color in colorPalette {
+                result.append(color.makeUIColor())
+            }
+            return result
         }
     }
     

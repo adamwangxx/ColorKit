@@ -21,6 +21,8 @@ class PaletteViewController: UIViewController {
     @IBOutlet weak var detailLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
     
+    private var albumIndex: Int = 0
+    
     private let albums = [
         Album(image: #imageLiteral(resourceName: "Album_cover_1"), name: "My Beautiful Dark Twisted Fantasy", artist: "Kanye West"),
         Album(image: #imageLiteral(resourceName: "Album_cover_2"), name: "Abbey Road", artist: "The Beatles"),
@@ -43,14 +45,16 @@ class PaletteViewController: UIViewController {
     }
     
     private func resetView() {
-        guard let album = albums.randomElement() else {
-            fatalError("Could not get album")
+        albumIndex += 1
+        if (albumIndex == albums.count) {
+            albumIndex = 0
         }
+        let album = albums[albumIndex]
         
         imageView.image = album.image
         
         let colors = try! album.image.dominantColors()
-        guard let palette = ColorPalette(orderedColors: colors, ignoreContrastRatio: true) else {
+        guard let palette = ColorPalette(orderedColors: colors, darkBackground: false, ignoreContrastRatio: true) else {
             fatalError("Could not create palette")
         }
         

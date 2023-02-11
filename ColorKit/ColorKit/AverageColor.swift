@@ -25,6 +25,8 @@ extension UIImage {
         /// An error happened during the creation of the image after applying the filter.
         case outputImageFailure
         
+        case medianCutFailure
+        
         var localizedDescription: String {
             switch self {
             case .ciImageFailure:
@@ -35,7 +37,10 @@ extension UIImage {
                 return "Failed to get image data."
             case .outputImageFailure:
                 return "Could not get the output image from the filter."
+            case .medianCutFailure:
+                return "Could not get the color palette from image."
             }
+        
         }
     }
     
