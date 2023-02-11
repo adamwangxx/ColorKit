@@ -9,6 +9,7 @@ import UIKit
 
 /// MMCQ (modified median cut quantization) algorithm from
 /// the Leptonica library (http://www.leptonica.com/).
+/// source code from Kanvas-iOS(https://github.com/tumblr/kanvas-ios)
 final class MMCQ {
     
     // Use only upper 5 bits of 8 bits
@@ -419,7 +420,7 @@ final class MMCQ {
     
     static func quantize(_ pixels: [UInt8], quality: Int, ignoreWhite: Bool, maxColors: Int) -> ColorMap? {
         // short-circuit
-        guard !pixels.isEmpty && maxColors > 1 && maxColors <= 256 else {
+        guard !pixels.isEmpty && maxColors >= 1 && maxColors <= 256 else {
             return nil
         }
         
@@ -429,20 +430,22 @@ final class MMCQ {
         // priority queue
         var pq = [vbox]
         
-        // Round up to have the same behaviour as in JavaScript
-        let target = Int(ceil(fractionByPopulation * Double(maxColors)))
-        
-        // first set of colors, sorted by population
-        iterate(over: &pq, comparator: compareByCount, target: target, histogram: histogram)
-        
-        // Re-sort by the product of pixel occupancy times the size in color space.
-        pq.sort(by: compareByProduct)
-        
-        // next set - generate the median cuts using the (npix * vol) sorting.
-        iterate(over: &pq, comparator: compareByProduct, target: maxColors - pq.count, histogram: histogram)
-        
-        // Reverse to put the highest elements first into the color map
-        pq = pq.reversed()
+        if (maxColors > 1) {            
+            // Round up to have the same behaviour as in JavaScript
+            let target = Int(ceil(fractionByPopulation * Double(maxColors)))
+            
+            // first set of colors, sorted by population
+            iterate(over: &pq, comparator: compareByCount, target: target, histogram: histogram)
+            
+            // Re-sort by the product of pixel occupancy times the size in color space.
+            pq.sort(by: compareByProduct)
+            
+            // next set - generate the median cuts using the (npix * vol) sorting.
+            iterate(over: &pq, comparator: compareByProduct, target: maxColors - pq.count, histogram: histogram)
+            
+            // Reverse to put the highest elements first into the color map
+            pq = pq.reversed()
+        }
         
         // calculate the actual colors
         let colorMap = ColorMap()

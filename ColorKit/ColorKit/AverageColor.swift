@@ -11,6 +11,12 @@ import CoreImage
 
 
 extension UIImage {
+    public enum AverageColorAlgorithm {
+        /// Calculate average color by median cut algorithm.
+        case medianCut
+        /// Calculate average color by core image filter, supported since iOS14.0
+        case coreImage
+    }
     
     enum ImageColorError: Error {
         /// The `CIImage` instance could not be created.
@@ -27,6 +33,8 @@ extension UIImage {
         
         case medianCutFailure
         
+        case averageFilterUnsupport
+        
         var localizedDescription: String {
             switch self {
             case .ciImageFailure:
@@ -39,19 +47,46 @@ extension UIImage {
                 return "Could not get the output image from the filter."
             case .medianCutFailure:
                 return "Could not get the color palette from image."
+            case .averageFilterUnsupport:
+                return "Doesn't support 'CIAreaAverage' filter in current system."
             }
-        
         }
     }
     
     /// Computes the average color of the image.
-    public func averageColor() throws -> UIColor {
+    public func averageColor(with algorithm: AverageColorAlgorithm = .medianCut) throws -> UIColor {
+        
+        if (algorithm == .coreImage) {
+            do {
+                let result = try averageColorByCoreImage()
+                return result
+            } catch {
+                if (error as! UIImage.ImageColorError == ImageColorError.averageFilterUnsupport) {
+                    return try averageColorByMedianCut()
+                }
+            }
+        }
+        return try averageColorByMedianCut()
+    }
+    
+    func averageColorByMedianCut() throws -> UIColor {
+        guard let colorPalette = ColorThief.getPalette(from: self, colorCount: 1, ignoreWhite: false) else {
+            throw ImageColorError.medianCutFailure
+        }
+        
+        guard colorPalette.count > 0, let color = colorPalette.first else {
+            throw ImageColorError.medianCutFailure
+        }
+        return color.makeUIColor()
+    }
+    
+    func averageColorByCoreImage() throws -> UIColor {
         guard let ciImage = CIImage(image: self) else {
             throw ImageColorError.ciImageFailure
         }
         
         guard let areaAverageFilter = CIFilter(name: "CIAreaAverage") else {
-            fatalError("Could not create `CIAreaAverage` filter.")
+            throw ImageColorError.averageFilterUnsupport
         }
         
         areaAverageFilter.setValue(ciImage, forKey: kCIInputImageKey)

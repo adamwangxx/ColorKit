@@ -20,14 +20,14 @@ class ImageColorsViewController: UIViewController {
             guard oldValue != currentImage else { return }
             do {
                 averageColor = try currentImage.averageColor()
-                dominantColors = try currentImage.dominantColorFrequencies()
+                dominantColors = try currentImage.dominantColors()
             } catch {
                 fatalError(error.localizedDescription)
             }
         }
     }
     
-    private var dominantColors = [ColorFrequency]() {
+    private var dominantColors = [UIColor]() {
         didSet {
             tableView.reloadData()
         }
@@ -108,7 +108,7 @@ class ImageColorsViewController: UIViewController {
         var color: UIColor
         switch section {
         case .dominantColor:
-            color = dominantColors[selectedIndexPath.row].color
+            color = dominantColors[selectedIndexPath.row]
         case .averageColor:
             color = averageColor
         }
@@ -152,9 +152,9 @@ extension ImageColorsViewController: UITableViewDataSource {
         
         switch section {
         case .dominantColor:
-            let colorFrequency = dominantColors[indexPath.row]
-            cell.backgroundColor = colorFrequency.color
-            cell.textLabel?.text = "\(colorFrequency.frequency)"
+            let color = dominantColors[indexPath.row]
+            cell.backgroundColor = color
+            cell.textLabel?.text = ""
         case .averageColor:
             cell.backgroundColor = averageColor
         }

@@ -27,7 +27,7 @@ class ColorDetailViewController: UITableViewController {
         super.viewDidLoad()
         
         colorView.backgroundColor = color
-        colorNameLabel.text = "Name: \(color.name())"
+        colorNameLabel.text = ""
         rgbLabel.text = String(format: "Red: %.2f Green: %.2f Blue: %.2f", color.red, color.green, color.blue)
         hexLabel.text = "Hex: \(color.hex)"
         cielabLabel.text = "CIE L: \(color.L) a: \(color.a) b: \(color.b)"

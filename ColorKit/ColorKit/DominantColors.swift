@@ -11,12 +11,11 @@ import CoreImage
 
 extension UIImage {
     
-    public enum DominantColorAlgorithm {        
-        /// Finds the dominant colors of an image by using using a k-means clustering algorithm. Supported since iOS 14.0
-        case kMeansClustering
-        
+    public enum DominantColorAlgorithm {
         /// Finds the dominant colors of an image by using median cut algorithm.
         case medianCut
+        /// Finds the dominant colors of an image by using using a k-means clustering algorithm. Supported since iOS 14.0
+        case kMeansClustering
     }
     
     /// Reoresents how precise the dominant color algorithm should be.
